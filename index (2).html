@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shihab — Electrical & Electronic Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ffffff;
+    --bg-soft: #f5f7fa;
+    --ink: #1b2430;
+    --ink-muted: #5b6472;
+    --navy: #1f3a5c;
+    --blue: #3e6fa5;
+    --blue-bright: #2f6fd6;
+    --blue-soft: #dce8f2;
+    --line: #e3e8ee;
+    --card: #ffffff;
+    --card-glass: rgba(255,255,255,0.62);
+    --particle: 31,58,92;
+    --glow: 62,111,165;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(20,30,45,0.04), 0 6px 20px rgba(20,30,45,0.05);
+    --shadow-lift: 0 10px 30px rgba(20,30,45,0.09), 0 2px 8px rgba(20,30,45,0.06);
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+  html[data-theme="dark"]{
+    --bg: #0b0f16;
+    --bg-soft: #10151f;
+    --ink: #e7ecf2;
+    --ink-muted: #8b96a6;
+    --navy: #a9c8ee;
+    --blue: #6394c9;
+    --blue-bright: #7db1f2;
+    --blue-soft: #172333;
+    --line: #1e2733;
+    --card: #10151f;
+    --card-glass: rgba(16,21,31,0.62);
+    --particle: 125,177,242;
+    --glow: 125,177,242;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+    --shadow-lift: 0 14px 34px rgba(0,0,0,0.45), 0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.65;
+    font-size:16px;
+    transition: background .4s ease, color .4s ease;
+    opacity:0;
+  }
+  body.ready{ opacity:1; animation: bodyIn .7s var(--ease); }
+  @keyframes bodyIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  a{ color: inherit; text-decoration:none; }
+  img{ max-width:100%; display:block; }
+  ::selection{ background: var(--blue-soft); }
+
+  #reading-progress{
+    position:fixed; top:0; left:0; height:2px; width:0%; z-index:200;
+    background: linear-gradient(90deg, var(--navy), var(--blue-bright));
+    transition: width .08s linear;
+  }
+  #cursor-glow{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background: radial-gradient(420px circle at var(--mx,50%) var(--my,50%), rgba(var(--glow),0.08), transparent 70%);
+    transition: opacity .3s ease; opacity:0;
+  }
+  @media (hover:hover) and (pointer:fine){ #cursor-glow.active{ opacity:1; } }
+  @media (prefers-reduced-motion:reduce){ body{ opacity:1; animation:none; } }
+
+  h1,h2,h3,h4{ font-family:'Newsreader', serif; font-weight:600; color:var(--ink); letter-spacing:-0.01em; }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.72rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--blue);
+  }
+  .muted{ color:var(--ink-muted); }
+
+  .container{ max-width:1080px; margin:0 auto; padding:0 28px; }
+
+  header.site-nav{
+    position: sticky; top:0; z-index:100;
+    background: var(--card-glass);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom:1px solid var(--line);
+    transition: padding .35s var(--ease), box-shadow .35s var(--ease);
+  }
+  header.site-nav.shrink{ box-shadow: 0 1px 0 var(--line), 0 8px 24px rgba(20,30,45,0.06); }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px; max-width:1080px; margin:0 auto;
+    transition: padding .35s var(--ease);
+  }
+  header.site-nav.shrink .nav-row{ padding:10px 28px; }
+  .brand{ font-family:'Newsreader', serif; font-size:1.15rem; font-weight:600; }
+  nav.links{ display:flex; gap:26px; align-items:center; }
+  nav.links a{ font-size:.92rem; color:var(--ink-muted); position:relative; padding:4px 0; transition:color .2s; }
+  nav.links a::after{
+    content:''; position:absolute; left:0; right:100%; bottom:-2px; height:1.5px;
+    background:var(--blue-bright); transition:right .25s var(--ease);
+  }
+  nav.links a:hover{ color:var(--navy); }
+  nav.links a:hover::after{ right:0; }
+  nav.links a.active{ color:var(--navy); }
+  nav.links a.active::after{ right:0; }
+  .more-wrap{ position:relative; }
+  .more-panel{
+    position:absolute; top:130%; right:0; background:var(--card);
+    border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:10px; display:none; flex-direction:column; min-width:190px;
+  }
+  .more-wrap:hover .more-panel, .more-wrap:focus-within .more-panel{ display:flex; }
+  .more-panel a{ padding:8px 12px; border-radius:6px; font-size:.88rem; }
+  .more-panel a:hover{ background:var(--bg-soft); }
+  .nav-tools{ display:flex; align-items:center; gap:14px; }
+  #theme-toggle, #nav-burger{
+    background:none; border:1px solid var(--line); border-radius:8px;
+    width:36px; height:36px; cursor:pointer; color:var(--ink);
+    display:flex; align-items:center; justify-content:center; font-size:1rem;
+  }
+  #nav-burger{ display:none; }
+
+  @media (max-width:860px){
+    nav.links{ display:none; }
+    #nav-burger{ display:flex; }
+  }
+  #mobile-panel{
+    display:none; flex-direction:column; padding:8px 28px 20px;
+    border-bottom:1px solid var(--line); background:var(--bg);
+  }
+  #mobile-panel.open{ display:flex; }
+  #mobile-panel a{ padding:10px 0; font-size:.95rem; border-bottom:1px solid var(--line); color:var(--ink-muted); }
+
+  .hero{ padding:110px 0 80px; position:relative; overflow:hidden; }
+  #particle-canvas{ position:absolute; inset:0; width:100%; height:100%; z-index:0; opacity:.55; }
+  .math-symbols{ position:absolute; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+  .math-symbols span{
+    position:absolute; font-family:'Newsreader', serif; font-style:italic;
+    color:var(--navy); opacity:0; animation: drift linear infinite;
+    will-change: transform, opacity;
+  }
+  @keyframes drift{
+    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+    8%{ opacity:.16; }
+    92%{ opacity:.14; }
+    100%{ transform:translateY(-140px) rotate(6deg); opacity:0; }
+  }
+  .hero-grid{ display:grid; grid-template-columns:1.2fr .8fr; gap:48px; align-items:center; position:relative; z-index:2; }
+  @media (max-width:860px){ .hero-grid{ grid-template-columns:1fr; } }
+  .hero .eyebrow.hero-in{ opacity:0; animation: fadeUp .7s var(--ease) .05s forwards; }
+  .hero h1{ font-size:clamp(2.1rem,5vw,3.2rem); line-height:1.15; margin:14px 0 18px; opacity:0; animation: fadeUp .8s var(--ease) .18s forwards; }
+  .hero .tagline{
+    font-size:1.02rem; color:var(--navy); font-weight:500; margin-bottom:18px;
+    font-family:'JetBrains Mono', monospace; font-size:.95rem; min-height:1.4em;
+  }
+  .hero .tagline::after{ content:''; display:inline-block; width:2px; height:1em; background:var(--blue-bright); margin-left:2px; vertical-align:-2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .hero p.lede{ max-width:56ch; color:var(--ink-muted); font-size:1.05rem; opacity:0; animation: fadeUp .8s var(--ease) .38s forwards; }
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+  .hero-actions{ margin-top:32px; display:flex; gap:12px; flex-wrap:wrap; opacity:0; animation: fadeUp .8s var(--ease) .52s forwards; }
+  .btn{
+    font-family:'Inter',sans-serif; font-size:.88rem; font-weight:500;
+    padding:11px 20px; border-radius:8px; border:1px solid var(--line);
+    color:var(--ink); transition:transform .25s var(--ease), box-shadow .25s var(--ease), background .2s, color .2s;
+    position:relative; overflow:hidden;
+  }
+  .btn.primary{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .btn:hover{ transform:translateY(-2px); box-shadow:var(--shadow-lift); }
+  .btn:active{ transform:translateY(0); }
+
+  .photo-frame{
+    width:100%; aspect-ratio:1/1.15; border-radius:var(--radius);
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:visible; opacity:0; z-index:2;
+    animation: fadeUp .9s var(--ease) .3s forwards;
+  }
+  .photo-frame .portrait{
+    width:100%; height:100%; object-fit:cover; object-position:50% 22%;
+    display:block; filter:grayscale(1) contrast(1.12) brightness(1.04);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #fff 0%, #fff 36%, rgba(255,255,255,0) 78%);
+    mask-image: radial-gradient(ellipse at 50% 40%, #fff 0%, #fff 36%, rgba(255,255,255,0) 78%);
+    transition: transform .7s var(--ease);
+  }
+  .photo-frame:hover .portrait{ transform:scale(1.035); }
+  .photo-frame::after{
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: radial-gradient(ellipse 72% 82% at 50% 38%, rgba(var(--glow),0.3), transparent 100%);
+    mix-blend-mode: soft-light;
+  }
+
+  .updates-strip{
+    margin-top:56px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    padding:18px 0; display:flex; gap:28px; overflow-x:auto;
+    position:relative; z-index:2; background:var(--bg);
+  }
+  .updates-strip .item{ font-size:.85rem; color:var(--ink-muted); white-space:nowrap; display:flex; gap:8px; align-items:center; }
+  .updates-strip .dot{ width:6px; height:6px; border-radius:50%; background:var(--blue); flex:none; }
+
+  section{ padding:96px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+  section.alt{ background:var(--bg-soft); }
+  .sec-head{ margin-bottom:44px; max-width:640px; }
+  .sec-head h2{ font-size:2rem; margin-top:8px; }
+  .sec-head p{ color:var(--ink-muted); margin-top:10px; }
+
+  .grid{ display:grid; gap:20px; }
+  .grid.cols-3{ grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); }
+  .grid.cols-2{ grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px; transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+    position:relative;
+  }
+  .card::before{
+    content:''; position:absolute; inset:0; border-radius:var(--radius); padding:1px;
+    background: linear-gradient(135deg, rgba(var(--glow),0.35), transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity:0; transition: opacity .35s var(--ease); pointer-events:none;
+  }
+  .card:hover{ box-shadow:var(--shadow-lift); transform:translateY(-4px); border-color:transparent; }
+  .card:hover::before{ opacity:1; }
+  .card h3{ font-size:1.05rem; margin:6px 0 8px; }
+  .card p{ color:var(--ink-muted); font-size:.92rem; }
+  .card .chip-row{ margin-top:14px; display:flex; gap:6px; flex-wrap:wrap; }
+  .chip{
+    font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--ink-muted);
+    border:1px solid var(--line); border-radius:20px; padding:3px 10px;
+  }
+  .card .links{ margin-top:14px; display:flex; gap:14px; }
+  .card .links a{ font-size:.8rem; color:var(--blue); font-family:'JetBrains Mono',monospace; }
+
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+  .reveal[data-anim="scale"]{ transform:translateY(0) scale(.94); }
+  .reveal[data-anim="scale"].in{ transform:translateY(0) scale(1); }
+  .reveal[data-anim="left"]{ transform:translateX(-24px); }
+  .reveal[data-anim="left"].in{ transform:translateX(0); }
+  .reveal[data-anim="right"]{ transform:translateX(24px); }
+  .reveal[data-anim="right"].in{ transform:translateX(0); }
+
+  .about-grid{ display:grid; grid-template-columns:1fr 1fr; gap:60px; }
+  @media (max-width:860px){ .about-grid{ grid-template-columns:1fr; } }
+  .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:32px; padding-top:26px; border-top:1px solid var(--line); }
+  @media (max-width:640px){ .stat-row{ grid-template-columns:repeat(2,1fr); } }
+  .stat{ display:flex; flex-direction:column; gap:4px; }
+  .stat-num{ font-family:'Newsreader',serif; font-size:1.9rem; font-weight:600; color:var(--navy); }
+  .stat-label{ font-size:.74rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.06em; }
+  .fact-list{ margin-top:24px; }
+  .fact-list dt{ font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--blue); text-transform:uppercase; letter-spacing:.08em; margin-top:16px; }
+  .fact-list dd{ font-size:.98rem; margin-top:2px; }
+
+  .timeline{ position:relative; padding-left:24px; border-left:2px solid var(--line); }
+  .t-item{ position:relative; padding-bottom:28px; }
+  .t-item:last-child{ padding-bottom:0; }
+  .t-item::before{
+    content:''; position:absolute; left:-31px; top:4px; width:10px; height:10px;
+    border-radius:50%; background:var(--blue); border:2px solid var(--bg);
+  }
+  .t-item .yr{ font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--ink-muted); }
+  .t-item h4{ font-size:1rem; margin:4px 0 4px; }
+  .t-item p{ color:var(--ink-muted); font-size:.9rem; }
+
+  .track-col h3{ font-size:1rem; margin-bottom:16px; }
+  .track-row{ margin-bottom:14px; }
+  .track-row .lbl{ display:flex; justify-content:space-between; font-size:.86rem; margin-bottom:6px; }
+  .track-row .lbl .pct{ color:var(--ink-muted); font-family:'JetBrains Mono',monospace; font-size:.78rem; }
+  .bar{ height:6px; background:var(--line); border-radius:4px; overflow:hidden; }
+  .bar span{ display:block; height:100%; background:var(--navy); border-radius:4px; }
+
+  .pub-item{ padding:20px 0; border-bottom:1px solid var(--line); }
+  .pub-item:first-child{ padding-top:0; }
+  .pub-item .kind{ font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--blue); text-transform:uppercase; }
+  .pub-item h4{ font-size:1.02rem; margin:6px 0 4px; }
+  .pub-item .cite{ font-size:.86rem; color:var(--ink-muted); font-style:italic; }
+
+  .blog-controls{ display:flex; gap:10px; margin-bottom:28px; flex-wrap:wrap; align-items:center; }
+  .blog-controls input{
+    flex:1; min-width:200px; padding:10px 14px; border-radius:8px; border:1px solid var(--line);
+    background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; font-size:.9rem;
+  }
+  .filter-chip{
+    font-size:.78rem; padding:7px 14px; border-radius:20px; border:1px solid var(--line);
+    color:var(--ink-muted); cursor:pointer; background:var(--bg); font-family:'JetBrains Mono',monospace;
+  }
+  .filter-chip.active{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .blog-card .meta{ font-size:.75rem; color:var(--ink-muted); font-family:'JetBrains Mono',monospace; margin-top:10px; }
+
+  .gallery-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+  .gallery-grid .ph{
+    aspect-ratio:4/3; background:var(--bg-soft); border:1px dashed var(--line); border-radius:8px;
+    display:flex; align-items:center; justify-content:center; color:var(--ink-muted); font-size:.75rem;
+    font-family:'JetBrains Mono',monospace; text-align:center; padding:8px;
+  }
+
+  .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:50px; }
+  @media (max-width:860px){ .contact-grid{ grid-template-columns:1fr; } }
+  .contact-links a{
+    display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace; font-size:.88rem;
+  }
+  .contact-links a span.arrow{ color:var(--ink-muted); }
+  form.contact-form{ display:flex; flex-direction:column; gap:14px; }
+  form.contact-form input, form.contact-form textarea{
+    padding:12px 14px; border-radius:8px; border:1px solid var(--line); background:var(--bg);
+    color:var(--ink); font-family:'Inter',sans-serif; font-size:.92rem;
+  }
+  form.contact-form textarea{ min-height:110px; resize:vertical; }
+
+  footer.site-footer{ padding:50px 0 40px; text-align:center; color:var(--ink-muted); font-size:.85rem; }
+  footer.site-footer .quote{ font-family:'Newsreader', serif; font-style:italic; font-size:1.05rem; color:var(--ink); max-width:56ch; margin:0 auto 18px; }
+
+  #back-to-top{
+    position:fixed; bottom:26px; right:26px; width:44px; height:44px; border-radius:50%;
+    background:var(--navy); color:#fff; border:none; cursor:pointer; font-size:1.1rem;
+    box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:.25s var(--ease); z-index:90;
+  }
+  #back-to-top.show{ opacity:1; pointer-events:auto; }
+  #back-to-top:hover{ transform:translateY(-3px); box-shadow:var(--shadow-lift); }
+
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    .reveal{ transition:none; opacity:1; transform:none; }
+    .math-symbols span{ animation:none; opacity:.1 !important; }
+  }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:2px solid var(--blue); outline-offset:2px;
+  }
+
+  /* ---- circular skill rings ---- */
+  .ring-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:22px; }
+  .ring-item{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px; }
+  .ring-item svg{ transform:rotate(-90deg); }
+  .ring-item .ring-track{ fill:none; stroke:var(--line); stroke-width:6; }
+  .ring-item .ring-bar{ fill:none; stroke:var(--blue-bright); stroke-width:6; stroke-linecap:round; stroke-dasharray:264; stroke-dashoffset:264; transition: stroke-dashoffset 1.1s var(--ease); }
+  .ring-item .ring-wrap{ position:relative; width:96px; height:96px; }
+  .ring-item .ring-pct{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--ink); }
+  .ring-item .ring-label{ font-size:.84rem; color:var(--ink-muted); }
+
+  /* ---- timeline ---- */
+  .t-item{ cursor:default; transition: transform .3s var(--ease); }
+
+  /* ---- publications ---- */
+  .pub-item{ transition: padding-left .3s var(--ease); }
+  .pub-item:hover{ padding-left:6px; }
+  .pub-actions{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+  .pub-actions button{
+    font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--ink-muted);
+    border:1px solid var(--line); background:var(--bg); border-radius:20px; padding:5px 12px;
+    cursor:pointer; transition:.2s var(--ease);
+  }
+  .pub-actions button:hover{ color:var(--blue-bright); border-color:var(--blue-bright); transform:translateY(-1px); }
+  .pub-actions button.copied{ color:#3e9a63; border-color:#3e9a63; }
+  .bibtex-block{
+    display:none; margin-top:12px; background:var(--bg-soft); border:1px solid var(--line);
+    border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:.76rem;
+    color:var(--ink-muted); white-space:pre-wrap; overflow-x:auto;
+  }
+  .bibtex-block.open{ display:block; }
+
+  /* ---- music ---- */
+  .vinyl-wrap{ display:flex; align-items:center; justify-content:center; padding:10px 0 6px; }
+  .vinyl{ width:92px; height:92px; border-radius:50%; position:relative; animation: spin 6s linear infinite; animation-play-state:paused;
+    background: repeating-radial-gradient(circle at center, #1a1f27 0 2px, #262c36 3px, #1a1f27 4px);
+    box-shadow: var(--shadow);
+  }
+  .card:hover .vinyl{ animation-play-state:running; }
+  .vinyl::after{ content:''; position:absolute; inset:38%; border-radius:50%; background:var(--blue-bright); }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .waveform{ display:flex; align-items:flex-end; gap:3px; height:34px; margin-top:14px; }
+  .waveform span{ width:3px; background:var(--blue-bright); opacity:.55; border-radius:2px; animation: wave 1.2s ease-in-out infinite; }
+  @keyframes wave{ 0%,100%{ height:20%; } 50%{ height:100%; } }
+
+  /* ---- gallery lightbox ---- */
+  .gallery-grid .ph{ cursor:pointer; transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+  .gallery-grid .ph:hover{ transform:scale(1.03); box-shadow:var(--shadow-lift); }
+  #lightbox{
+    position:fixed; inset:0; z-index:300; background:rgba(10,14,20,0.86);
+    display:none; align-items:center; justify-content:center; padding:40px;
+    backdrop-filter: blur(4px);
+  }
+  #lightbox.open{ display:flex; animation: fadeUp .3s var(--ease); }
+  #lightbox .lb-box{
+    background:var(--card); border-radius:var(--radius); padding:40px; max-width:420px; text-align:center;
+    font-family:'JetBrains Mono',monospace; color:var(--ink-muted); font-size:.85rem;
+  }
+  #lightbox .lb-close{
+    position:absolute; top:26px; right:32px; width:40px; height:40px; border-radius:50%;
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#fff;
+    font-size:1.1rem; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+<div id="reading-progress"></div>
+<div id="cursor-glow"></div>
+
+<header class="site-nav">
+  <div class="nav-row">
+    <a class="brand" href="#home">Shihab</a>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#projects">Projects</a>
+      <a href="#blog">Blog</a>
+      <div class="more-wrap" tabindex="0">
+        <a href="#more">More ▾</a>
+        <div class="more-panel">
+          <a href="#learning">Learning Journey</a>
+          <a href="#publications">Publications</a>
+          <a href="#writing">Writing</a>
+          <a href="#skills">Skills</a>
+          <a href="#achievements">Achievements</a>
+          <a href="#github">GitHub</a>
+          <a href="#bookshelf">Bookshelf</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#music">Music</a>
+        </div>
+      </div>
+      <a href="#cv">CV</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-tools">
+      <button id="theme-toggle" aria-label="Toggle dark mode">◐</button>
+      <button id="nav-burger" aria-label="Open menu">☰</button>
+    </div>
+  </div>
+  <div id="mobile-panel">
+    <a href="#about">About</a><a href="#research">Research</a><a href="#projects">Projects</a>
+    <a href="#learning">Learning Journey</a><a href="#publications">Publications</a>
+    <a href="#blog">Blog</a><a href="#writing">Writing</a><a href="#skills">Skills</a>
+    <a href="#achievements">Achievements</a><a href="#github">GitHub</a>
+    <a href="#bookshelf">Bookshelf</a><a href="#gallery">Gallery</a>
+    <a href="#music">Music</a><a href="#cv">CV</a><a href="#contact">Contact</a>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" id="home">
+    <canvas id="particle-canvas"></canvas>
+    <div class="math-symbols" id="math-symbols" aria-hidden="true"></div>
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow hero-in">Undergraduate Researcher</div>
+        <h1>Shihab</h1>
+        <div class="tagline" id="tagline"></div>
+        <p class="lede">I'm an undergraduate exploring the space between classical electrical engineering and quantum hardware — with a growing focus on superconducting quantum circuits, quantum information, microwave engineering, device simulation, electromagnetics, and scientific computing.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#about">About Me</a>
+          <a class="btn" href="#research">Research</a>
+          <a class="btn" href="#projects">Projects</a>
+          <a class="btn" href="#publications">Publications</a>
+          <a class="btn" href="#blog">Blog</a>
+          <a class="btn" href="#contact">Contact</a>
+        </div>
+      </div>
+      <div class="photo-frame">
+        <img class="portrait" src="images/shihab.jpg" alt="Portrait of Shihab">
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="updates-strip" aria-label="Latest updates">
+        <div class="item"><span class="dot"></span>Designing a TransmonCrossFL qubit layout in Qiskit Metal</div>
+        <div class="item"><span class="dot"></span>Reading Zwiebach's MIT 8.05 notes on the uncertainty principle</div>
+        <div class="item"><span class="dot"></span>Studying the extended EPR method for fluxonium qubits</div>
+        <div class="item"><span class="dot"></span>Writing up the ESP32 thermometer calibration results</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="container about-grid">
+      <div class="reveal" data-anim="left">
+        <div class="eyebrow">01 — About</div>
+        <h2>About Me</h2>
+        <p class="muted">I'm an Electrical &amp; Electronic Engineering undergraduate working across power systems, control theory, digital electronics, and microwave engineering — while pursuing a research-level interest in superconducting quantum circuits on the side. I like building understanding from first principles: before I trust a simulation, I want the derivation on paper.</p>
+        <p class="muted" style="margin-top:14px;">My long-term goal is to pursue graduate research in superconducting quantum computing and quantum hardware — bridging circuit design, microwave engineering, and quantum information theory.</p>
+        <dl class="fact-list">
+          <dt>University</dt><dd>Chittagong University of Engineering &amp; Technology (CUET)</dd>
+          <dt>Program</dt><dd>B.Sc. in Electrical &amp; Electronic Engineering</dd>
+          <dt>CGPA</dt><dd>— <span class="muted">(add current CGPA)</span></dd>
+          <dt>Research Interests</dt><dd>Superconducting qubits, circuit QED, microwave engineering, quantum device simulation</dd>
+        </dl>
+        <div class="stat-row reveal" id="stat-row">
+          <div class="stat"><span class="stat-num" data-count="3">0</span><span class="stat-label">Years Learning</span></div>
+          <div class="stat"><span class="stat-num" data-count="7">0</span><span class="stat-label">Projects Started</span></div>
+          <div class="stat"><span class="stat-num" data-count="18">0</span><span class="stat-label">Courses Completed</span></div>
+          <div class="stat"><span class="stat-num" data-count="12">0</span><span class="stat-label">Papers Read</span></div>
+        </div>
+      </div>
+      <div class="reveal" data-anim="right">
+        <div class="eyebrow">Academic Timeline</div>
+        <div class="timeline" style="margin-top:16px;">
+          <div class="t-item"><div class="yr">2026</div><h4>Quantum Hardware Deep Dive</h4><p>Working through circuit QED, the EPR method, and superconducting qubit design in Qiskit Metal.</p></div>
+          <div class="t-item"><div class="yr">2025</div><h4>Semiconductor Devices &amp; Microwave Engineering</h4><p>Coursework in device physics, heterojunctions, antenna theory, and RF fundamentals.</p></div>
+          <div class="t-item"><div class="yr">2024</div><h4>Control &amp; Power Systems</h4><p>Studied frequency-domain control design, stability analysis, and HVDC transmission systems.</p></div>
+          <div class="t-item"><div class="yr">2022</div><h4>Started B.Sc. EEE at CUET</h4><p>Began undergraduate studies in Electrical &amp; Electronic Engineering.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt" id="research">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">02 — Research Interests</div>
+        <h2>What I'm exploring</h2>
+        <p>Each card is a living space — updated as my reading and project work progress.</p>
+      </div>
+      <div class="grid cols-3" id="research-grid"></div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">03 — Projects</div>
+        <h2>Selected Projects</h2>
+        <p>A mix of quantum hardware design work, coursework, and hardware/electronics builds.</p>
+      </div>
+      <div class="grid cols-2" id="project-grid"></div>
+    </div>
+  </section>
+
+  <section class="alt" id="learning">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">04 — Learning Journey</div>
+        <h2>Progress Tracker</h2>
+        <p>Books, courses, papers, and tools I'm currently working through.</p>
+      </div>
+      <div class="grid cols-2">
+        <div class="track-col reveal">
+          <h3>Currently Learning</h3>
+          <div id="track-learning"></div>
+        </div>
+        <div class="track-col reveal">
+          <h3>Reading &amp; Coursework</h3>
+          <div id="track-reading"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="publications">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">05 — Publications</div>
+        <h2>Publications &amp; Reports</h2>
+        <p>Research papers, posters, preprints, and technical reports.</p>
+      </div>
+      <div id="pub-list" class="reveal"></div>
+    </div>
+  </section>
+
+  <section class="alt" id="blog">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">06 — Technical Blog</div>
+        <h2>Research Notes &amp; Writing</h2>
+        <p>Notes on quantum computing, engineering, mathematics, and simulation — as I write them.</p>
+      </div>
+      <div class="blog-controls reveal">
+        <input type="text" id="blog-search" placeholder="Search posts…">
+      </div>
+      <div class="blog-controls reveal" id="blog-filters"></div>
+      <div class="grid cols-3" id="blog-grid"></div>
+    </div>
+  </section>
+
+  <section id="writing">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">07 — Writing</div>
+        <h2>Essays &amp; Reflections</h2>
+        <p>A personal space for essays, learning journals, and scientific philosophy — beyond the technical notes.</p>
+      </div>
+      <div class="grid cols-3" id="writing-grid"></div>
+    </div>
+  </section>
+
+  <section class="alt" id="skills">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">08 — Skills</div>
+        <h2>Tools &amp; Proficiencies</h2>
+      </div>
+      <div class="grid cols-2">
+        <div class="reveal">
+          <h3 style="font-size:1rem; margin-bottom:16px;">Programming &amp; Computing</h3>
+          <div id="skills-code" class="ring-grid"></div>
+        </div>
+        <div class="reveal">
+          <h3 style="font-size:1rem; margin-bottom:16px;">Scientific &amp; Simulation Tools</h3>
+          <div id="skills-tools" class="ring-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="achievements">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">09 — Academic Achievements</div>
+        <h2>Milestones</h2>
+      </div>
+      <div class="timeline reveal" id="achievements-list"></div>
+    </div>
+  </section>
+
+  <section class="alt" id="github">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">10 — GitHub</div>
+        <h2>Repositories</h2>
+        <p>Pinned and featured work — connect your GitHub to auto-populate this section.</p>
+      </div>
+      <div class="grid cols-3" id="github-grid"></div>
+    </div>
+  </section>
+
+  <section id="bookshelf">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">11 — Bookshelf</div>
+        <h2>Virtual Bookshelf</h2>
+      </div>
+      <div class="grid cols-3" id="bookshelf-grid"></div>
+    </div>
+  </section>
+
+  <section class="alt" id="gallery">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">12 — Gallery</div>
+        <h2>Photo Gallery</h2>
+        <p>Conference, lab, and presentation photos — placeholders until added.</p>
+      </div>
+      <div class="gallery-grid reveal" id="gallery-grid">
+        <div class="ph" data-label="Lab">Lab</div><div class="ph" data-label="Conference">Conference</div><div class="ph" data-label="Presentation">Presentation</div>
+        <div class="ph" data-label="Project">Project</div><div class="ph" data-label="University">University</div><div class="ph" data-label="Workshop">Workshop</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="music">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">13 — Music</div>
+        <h2>A Small Creative Corner</h2>
+        <p>Because a good researcher needs a life outside the lab.</p>
+      </div>
+      <div class="grid cols-3 reveal">
+        <div class="card">
+          <div class="eyebrow">Favorite</div><h3>Favorite Compositions</h3><p>Add a short list or embedded playlist here.</p>
+          <div class="vinyl-wrap"><div class="vinyl"></div></div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Practice</div><h3>Practice Journal</h3><p>Log what you're currently practicing.</p>
+          <div class="waveform" aria-hidden="true">
+            <span style="animation-delay:0s"></span><span style="animation-delay:.1s"></span><span style="animation-delay:.2s"></span>
+            <span style="animation-delay:.3s"></span><span style="animation-delay:.15s"></span><span style="animation-delay:.05s"></span>
+            <span style="animation-delay:.25s"></span><span style="animation-delay:.35s"></span>
+          </div>
+        </div>
+        <div class="card"><div class="eyebrow">Listening</div><h3>Recommendations</h3><p>Embed a Spotify or YouTube playlist link here.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt" id="cv">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="eyebrow">14 — CV</div>
+        <h2>Curriculum Vitae</h2>
+        <p>Download a copy of my academic and research resumes.</p>
+      </div>
+      <div class="hero-actions reveal">
+        <a class="btn primary" href="#">Download Academic CV (PDF)</a>
+        <a class="btn" href="#">Download Research Resume (PDF)</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container contact-grid">
+      <div class="reveal">
+        <div class="eyebrow">15 — Contact</div>
+        <h2>Get in Touch</h2>
+        <p class="muted" style="margin:12px 0 24px;">Open to research collaborations, internships, and conversations about quantum hardware or power systems.</p>
+        <div class="contact-links">
+          <a href="mailto:your.email@example.com">Email <span class="arrow">→</span></a>
+          <a href="#">LinkedIn <span class="arrow">→</span></a>
+          <a href="#">GitHub <span class="arrow">→</span></a>
+          <a href="#">Google Scholar <span class="arrow">→</span></a>
+          <a href="#">ORCID <span class="arrow">→</span></a>
+          <a href="#">ResearchGate <span class="arrow">→</span></a>
+        </div>
+      </div>
+      <form class="contact-form reveal" onsubmit="event.preventDefault(); alert('This form needs a backend or a service like Formspree to actually send messages.');">
+        <input type="text" placeholder="Name" required>
+        <input type="email" placeholder="Email" required>
+        <textarea placeholder="Message" required></textarea>
+        <button class="btn primary" type="submit" style="align-self:flex-start;">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="quote" id="quote-of-month">"The important thing is not to stop questioning." — Albert Einstein</div>
+  <div class="muted">Shihab · EEE, CUET · Chattogram, Bangladesh · Updated 2026</div>
+</footer>
+
+<button id="back-to-top" aria-label="Back to top">↑</button>
+
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo preview">
+  <button class="lb-close" aria-label="Close preview">✕</button>
+  <div class="lb-box" id="lb-content"></div>
+</div>
+
+<script>
+const researchInterests = [
+  {tag:"Primary", title:"Quantum Computing", body:"Foundations of quantum information, gates, and algorithms — updated as coursework and reading progress."},
+  {tag:"Primary", title:"Superconducting Qubits", body:"Transmon and fluxonium design, Josephson junction physics, circuit quantization."},
+  {tag:"Design", title:"Transmon Design", body:"Lumped-element and CPW-based transmon layouts, tunable transmons via SQUID flux."},
+  {tag:"Theory", title:"Circuit Quantum Electrodynamics", body:"Black-box quantization, the energy participation ratio (EPR) method, dispersive readout."},
+  {tag:"Engineering", title:"Microwave Engineering", body:"RF/microwave circuit fundamentals, resonators, antenna theory."},
+  {tag:"Simulation", title:"Quantum Device Simulation", body:"Simulating superconducting circuits in Qiskit Metal, ADS, and related tools."},
+  {tag:"Physics", title:"Electromagnetics", body:"Field theory foundations underlying microwave and RF circuit design."},
+  {tag:"Signals", title:"Signal Processing", body:"Z-transforms, frequency-domain analysis, and classical signal processing fundamentals."},
+];
+
+const projects = [
+  {title:"Transmon Qubit Design — Qiskit Metal", desc:"Designing and simulating a TransmonCrossFL superconducting qubit component, building on circuit QED theory and the EPR method for highly anharmonic circuits.", stack:["Qiskit Metal","Python","WSL2","ADS"], github:"#", pdf:"#", future:"Extend to a coupled two-qubit layout and simulate crosstalk."},
+  {title:"ESP32 Digital Thermometer", desc:"Designed and calibrated a digital thermometer on an ESP32, identifying a systematic underreading bias (about -2.3% mean error) and writing it up as an IEEE-format conference paper.", stack:["ESP32","Calibration","IEEEtran / LaTeX","MATLAB"], github:"#", pdf:"#", future:"Add temperature-compensation firmware and re-run calibration."},
+  {title:"CPW Resonator Design", desc:"Placeholder for coplanar waveguide resonator design work — geometry, coupling, and expected quality factor.", stack:["ADS","Microwave Design"], github:"#", pdf:"#", future:"Simulate coupling to a transmon qubit."},
+  {title:"MATLAB Signal Processing Labs", desc:"Coursework projects on Z-transforms, frequency response, and filter design.", stack:["MATLAB"], github:"#", pdf:"#", future:"Publish clean write-ups of each lab."},
+];
+
+const learningTracks = [
+  {label:"Quantum Computation & Information", pct:55},
+  {label:"Qiskit Metal", pct:65},
+  {label:"Microwave Engineering (HFSS)", pct:20},
+  {label:"COMSOL", pct:10},
+];
+const readingTracks = [
+  {label:"Zwiebach - MIT 8.05 Notes", pct:60},
+  {label:"Wang et al. - Surface Participation Loss", pct:100},
+  {label:"Extended EPR Method (Fluxonium)", pct:75},
+  {label:"Nise - Control Systems Engineering", pct:100},
+];
+
+const publications = [
+  {kind:"Technical Report", title:"Design & Calibration of an ESP32-Based Digital Thermometer", cite:"Shihab et al., Undergraduate Group Project, CUET, 2026 (in preparation).", doi:"#", pdf:"#",
+   bibtex:"@techreport{shihab2026esp32,\n  title = {Design \\& Calibration of an ESP32-Based Digital Thermometer},\n  author = {Shihab et al.},\n  institution = {CUET},\n  year = {2026},\n  note = {In preparation}\n}"},
+  {kind:"Preprint", title:"Notes on the Extended EPR Method for Fluxonium Qubits", cite:"Personal research notes - not yet submitted.", doi:"#", pdf:"#",
+   bibtex:"@unpublished{shihab2026epr,\n  title = {Notes on the Extended EPR Method for Fluxonium Qubits},\n  author = {Shihab},\n  note = {Personal research notes, not yet submitted},\n  year = {2026}\n}"},
+];
+
+const blogPosts = [
+  {cat:"Quantum Computing", title:"Deriving the Canonical Commutation Relation", meta:"8 min read"},
+  {cat:"Research Diary", title:"Debugging Qiskit Metal on Windows/WSL", meta:"6 min read"},
+  {cat:"Engineering Notes", title:"Reading a Transmission Line's ABCD Parameters", meta:"7 min read"},
+  {cat:"Simulation Tutorials", title:"Headless Rendering with qm.view() in Qiskit Metal", meta:"5 min read"},
+  {cat:"Mathematics", title:"The Generalized Uncertainty Inequality, Step by Step", meta:"10 min read"},
+  {cat:"Electronics", title:"What an IEEEtran Paper Taught Me About Calibration Bias", meta:"6 min read"},
+];
+
+const writingItems = [
+  {tag:"Essay", title:"Why Classical Intuition Still Matters in Quantum Circuits"},
+  {tag:"Learning Journal", title:"A Week Inside the EPR Method"},
+  {tag:"Reflection", title:"On Getting Comfortable With Not Knowing"},
+];
+
+const codeSkills = [{l:"Python",p:75},{l:"MATLAB",p:80},{l:"C",p:60},{l:"C++",p:45}];
+const toolSkills = [{l:"Qiskit Metal",p:65},{l:"Keysight ADS",p:55},{l:"HFSS",p:20},{l:"COMSOL",p:15},{l:"Proteus / PSpice",p:60}];
+
+const achievements = [
+  {yr:"2026", t:"Independent study - superconducting qubit hardware", d:"Self-directed research track alongside coursework."},
+  {yr:"2025", t:"Group project - ESP32 digital thermometer", d:"IEEE-format conference paper drafted."},
+  {yr:"-", t:"Dean's List / Scholarships / Awards", d:"Add your achievements here."},
+];
+
+const githubRepos = [
+  {name:"transmon-crossfl-design", desc:"Qiskit Metal layout for a TransmonCrossFL qubit.", lang:"Python"},
+  {name:"esp32-thermometer", desc:"Calibration firmware and analysis for an ESP32 digital thermometer.", lang:"C++ / Python"},
+  {name:"control-systems-notes", desc:"LaTeX notes on frequency-domain compensator design.", lang:"TeX"},
+];
+
+const bookshelf = [
+  {status:"Reading", title:"Zwiebach, Mastering Quantum Mechanics"},
+  {status:"Completed", title:"Nise, Control Systems Engineering"},
+  {status:"Recommended", title:"Circuit QED survey papers"},
+];
+
+function el(html){ const d=document.createElement('div'); d.innerHTML=html.trim(); return d.firstChild; }
+
+document.getElementById('research-grid').append(...researchInterests.map(r=>el(`
+  <div class="card reveal" data-anim="scale"><div class="eyebrow">${r.tag}</div><h3>${r.title}</h3><p>${r.body}</p></div>
+`)));
+
+document.getElementById('project-grid').append(...projects.map((p,i)=>el(`
+  <div class="card reveal" data-anim="${i%2===0?'left':'right'}">
+    <div class="eyebrow">Project</div><h3>${p.title}</h3><p>${p.desc}</p>
+    <div class="chip-row">${p.stack.map(s=>`<span class="chip">${s}</span>`).join('')}</div>
+    <div class="links"><a href="${p.github}">GitHub</a><a href="${p.pdf}">PDF Report</a></div>
+    <p style="margin-top:10px; font-size:.82rem;"><em>Future work:</em> ${p.future}</p>
+  </div>
+`)));
+
+function bar(label, pct){
+  return `<div class="track-row"><div class="lbl"><span>${label}</span><span class="pct">${pct}%</span></div><div class="bar"><span style="width:${pct}%"></span></div></div>`;
+}
+document.getElementById('track-learning').innerHTML = learningTracks.map(t=>bar(t.label,t.pct)).join('');
+document.getElementById('track-reading').innerHTML = readingTracks.map(t=>bar(t.label,t.pct)).join('');
+
+function ring(label, pct){
+  const r = 42, c = 2*Math.PI*r;
+  return `<div class="ring-item reveal" data-anim="scale"><div class="ring-wrap">
+    <svg width="96" height="96" viewBox="0 0 96 96">
+      <circle class="ring-track" cx="48" cy="48" r="${r}"></circle>
+      <circle class="ring-bar" cx="48" cy="48" r="${r}" data-pct="${pct}" style="stroke-dasharray:${c.toFixed(1)}"></circle>
+    </svg>
+    <div class="ring-pct">${pct}%</div>
+  </div><div class="ring-label">${label}</div></div>`;
+}
+document.getElementById('skills-code').innerHTML = codeSkills.map(s=>ring(s.l,s.p)).join('');
+document.getElementById('skills-tools').innerHTML = toolSkills.map(s=>ring(s.l,s.p)).join('');
+
+document.getElementById('pub-list').innerHTML = publications.map((p,i)=>`
+  <div class="pub-item reveal">
+    <div class="kind">${p.kind}</div><h4>${p.title}</h4><div class="cite">${p.cite}</div>
+    <div class="pub-actions">
+      <button data-act="copy" data-i="${i}">Copy Citation</button>
+      <button data-act="bibtex" data-i="${i}">BibTeX</button>
+      <a class="btn" style="padding:5px 12px; font-size:.72rem;" href="${p.doi}">DOI</a>
+      <a class="btn" style="padding:5px 12px; font-size:.72rem;" href="${p.pdf}">PDF</a>
+    </div>
+    <pre class="bibtex-block" id="bibtex-${i}">${p.bibtex}</pre>
+  </div>
+`).join('');
+document.querySelectorAll('.pub-actions button[data-act="copy"]').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    const p = publications[btn.dataset.i];
+    try{ await navigator.clipboard.writeText(p.cite); }catch(e){}
+    btn.textContent = 'Copied ✓'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy Citation'; btn.classList.remove('copied'); }, 1800);
+  });
+});
+document.querySelectorAll('.pub-actions button[data-act="bibtex"]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.getElementById(`bibtex-${btn.dataset.i}`).classList.toggle('open');
+  });
+});
+
+document.getElementById('writing-grid').append(...writingItems.map(w=>el(`
+  <div class="card reveal"><div class="eyebrow">${w.tag}</div><h3>${w.title}</h3><p>Coming soon.</p></div>
+`)));
+
+document.getElementById('achievements-list').innerHTML = achievements.map(a=>`
+  <div class="t-item"><div class="yr">${a.yr}</div><h4>${a.t}</h4><p>${a.d}</p></div>
+`).join('');
+
+document.getElementById('github-grid').append(...githubRepos.map(r=>el(`
+  <div class="card reveal"><div class="eyebrow">${r.lang}</div><h3>${r.name}</h3><p>${r.desc}</p></div>
+`)));
+
+document.getElementById('bookshelf-grid').append(...bookshelf.map(b=>el(`
+  <div class="card reveal"><div class="eyebrow">${b.status}</div><h3>${b.title}</h3></div>
+`)));
+
+const blogGrid = document.getElementById('blog-grid');
+const categories = ["All", ...new Set(blogPosts.map(b=>b.cat))];
+document.getElementById('blog-filters').append(...categories.map((c,i)=>{
+  const chip = el(`<span class="filter-chip ${i===0?'active':''}" data-cat="${c}">${c}</span>`);
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.filter-chip').forEach(x=>x.classList.remove('active'));
+    chip.classList.add('active');
+    renderBlog();
+  });
+  return chip;
+}));
+
+function renderBlog(){
+  const activeCat = document.querySelector('.filter-chip.active')?.dataset.cat || 'All';
+  const q = document.getElementById('blog-search').value.toLowerCase();
+  blogGrid.innerHTML = '';
+  blogPosts
+    .filter(p => (activeCat==='All' || p.cat===activeCat) && p.title.toLowerCase().includes(q))
+    .forEach(p => blogGrid.append(el(`
+      <div class="card blog-card reveal in"><div class="eyebrow">${p.cat}</div><h3>${p.title}</h3><div class="meta">${p.meta}</div></div>
+    `)));
+  if(!blogGrid.children.length){ blogGrid.append(el(`<p class="muted">No posts match your search.</p>`)); }
+}
+document.getElementById('blog-search').addEventListener('input', renderBlog);
+renderBlog();
+
+const themeBtn = document.getElementById('theme-toggle');
+function setTheme(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); themeBtn.textContent = t==='dark' ? '\u2600' : '\u25D0'; }
+try{ setTheme(localStorage.getItem('theme') || 'light'); }catch(e){ setTheme('light'); }
+themeBtn.addEventListener('click', ()=> setTheme(document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark'));
+
+const burger = document.getElementById('nav-burger');
+const mobilePanel = document.getElementById('mobile-panel');
+burger.addEventListener('click', ()=> mobilePanel.classList.toggle('open'));
+mobilePanel.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobilePanel.classList.remove('open')));
+
+const backBtn = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> backBtn.classList.toggle('show', window.scrollY > 600));
+backBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+
+const quotes = [
+  '"The important thing is not to stop questioning." - Albert Einstein',
+  '"I think I can safely say that nobody understands quantum mechanics." - Richard Feynman',
+  '"Study hard what interests you the most in the most undisciplined, irreverent, and original manner possible." - Richard Feynman',
+];
+document.getElementById('quote-of-month').textContent = quotes[new Date().getMonth() % quotes.length];
+
+/* ---- scroll reveal, with special handling for stat counters + skill rings ---- */
+function animateCounters(container){
+  container.querySelectorAll('.stat-num').forEach(el=>{
+    const target = parseInt(el.dataset.count, 10);
+    const dur = 1100, start = performance.now();
+    function step(now){
+      const p = Math.min(1, (now-start)/dur);
+      el.textContent = Math.round(target * (1 - Math.pow(1-p, 3)));
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+function animateRings(container){
+  container.querySelectorAll('.ring-bar').forEach(circle=>{
+    const pct = parseFloat(circle.dataset.pct);
+    const c = 2*Math.PI*42;
+    circle.style.strokeDashoffset = (c - (pct/100)*c).toFixed(1);
+  });
+}
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.id === 'stat-row') animateCounters(e.target);
+      if(e.target.classList.contains('ring-grid')) animateRings(e.target);
+      io.unobserve(e.target);
+    }
+  });
+}, {threshold:0.12});
+document.querySelectorAll('.reveal').forEach(elm=>io.observe(elm));
+[...document.querySelectorAll('.ring-grid')].forEach(g=>io.observe(g));
+
+/* ---- nav shrink + active section indicator ---- */
+const siteNav = document.querySelector('header.site-nav');
+window.addEventListener('scroll', ()=> siteNav.classList.toggle('shrink', window.scrollY > 40));
+const navLinks = document.querySelectorAll('nav.links a[href^="#"], .more-panel a[href^="#"]');
+const sections = [...navLinks].map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+const sectionObserver = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id = '#'+e.target.id;
+      navLinks.forEach(a=> a.classList.toggle('active', a.getAttribute('href')===id));
+    }
+  });
+}, {rootMargin:'-40% 0px -50% 0px', threshold:0});
+sections.forEach(s=>sectionObserver.observe(s));
+
+/* ---- hero typing animation ---- */
+const taglineEl = document.getElementById('tagline');
+const phrases = [
+  "Electrical & Electronic Engineering Student",
+  "Future Quantum Hardware Researcher",
+  "Superconducting Quantum Computing",
+  "Microwave Engineering",
+  "Scientific Computing",
+];
+let pIdx = 0, cIdx = 0, deleting = false;
+function typeLoop(){
+  const full = phrases[pIdx];
+  if(!deleting){
+    cIdx++;
+    taglineEl.textContent = full.slice(0, cIdx);
+    if(cIdx === full.length){ deleting = true; setTimeout(typeLoop, 1400); return; }
+    setTimeout(typeLoop, 42);
+  } else {
+    cIdx--;
+    taglineEl.textContent = full.slice(0, cIdx);
+    if(cIdx === 0){ deleting = false; pIdx = (pIdx+1) % phrases.length; setTimeout(typeLoop, 300); return; }
+    setTimeout(typeLoop, 22);
+  }
+}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  taglineEl.textContent = phrases[0];
+} else {
+  typeLoop();
+}
+
+/* ---- drifting math symbols in hero background ---- */
+const mathSyms = ['\u03c8','\u03c3\u2093','\u0127','H','\u03a6','\u03c9','e^{i\u03c9t}','|0\u27e9','|1\u27e9','\u2207\u00d7E','\u03b4','\u2211','\u222b'];
+const symWrap = document.getElementById('math-symbols');
+if(symWrap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const count = window.innerWidth < 720 ? 8 : 16;
+  for(let i=0;i<count;i++){
+    const s = document.createElement('span');
+    s.textContent = mathSyms[i % mathSyms.length];
+    s.style.left = (Math.random()*94+2) + '%';
+    s.style.top = (Math.random()*80+10) + '%';
+    s.style.fontSize = (1.1 + Math.random()*1.6) + 'rem';
+    s.style.animationDuration = (14 + Math.random()*12) + 's';
+    s.style.animationDelay = (-Math.random()*20) + 's';
+    symWrap.appendChild(s);
+  }
+}
+
+/* ---- lightweight canvas particle field, mouse-responsive ---- */
+(function particles(){
+  const canvas = document.getElementById('particle-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const heroEl = document.getElementById('home');
+  let w,h,dpr = Math.min(window.devicePixelRatio||1, 2);
+  let mouse = {x:null, y:null};
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize(){
+    w = heroEl.offsetWidth; h = heroEl.offsetHeight;
+    canvas.width = w*dpr; canvas.height = h*dpr;
+    canvas.style.width = w+'px'; canvas.style.height = h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const N = reduced ? 0 : (window.innerWidth < 720 ? 28 : 55);
+  const pts = Array.from({length:N}, ()=>({
+    x: Math.random()*w, y: Math.random()*h,
+    vx: (Math.random()-0.5)*0.22, vy: (Math.random()-0.5)*0.22,
+    r: Math.random()*1.6+0.6
+  }));
+
+  heroEl.addEventListener('mousemove', e=>{
+    const rect = heroEl.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+  });
+  heroEl.addEventListener('mouseleave', ()=>{ mouse.x=null; mouse.y=null; });
+
+  function tick(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--particle')},0.55)`;
+    for(const p of pts){
+      p.x += p.vx; p.y += p.vy;
+      if(mouse.x!=null){
+        const dx = p.x-mouse.x, dy = p.y-mouse.y, dist = Math.hypot(dx,dy);
+        if(dist < 110){ p.x += dx/dist*0.6; p.y += dy/dist*0.6; }
+      }
+      if(p.x<0) p.x=w; if(p.x>w) p.x=0;
+      if(p.y<0) p.y=h; if(p.y>h) p.y=0;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    }
+    ctx.strokeStyle = `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--particle')},0.12)`;
+    ctx.lineWidth = 1;
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx = pts[i].x-pts[j].x, dy = pts[i].y-pts[j].y, d = Math.hypot(dx,dy);
+        if(d < 90){ ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.stroke(); }
+      }
+    }
+    if(!reduced) requestAnimationFrame(tick);
+  }
+  if(!reduced) tick(); else ctx.clearRect(0,0,w,h);
+})();
+
+/* ---- cursor glow (desktop only) ---- */
+const cursorGlow = document.getElementById('cursor-glow');
+if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){
+  window.addEventListener('mousemove', e=>{
+    cursorGlow.classList.add('active');
+    cursorGlow.style.setProperty('--mx', e.clientX+'px');
+    cursorGlow.style.setProperty('--my', e.clientY+'px');
+  });
+  window.addEventListener('mouseleave', ()=> cursorGlow.classList.remove('active'));
+}
+
+/* ---- reading progress bar ---- */
+const progressBar = document.getElementById('reading-progress');
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  progressBar.style.width = pct + '%';
+});
+
+/* ---- gallery lightbox ---- */
+const lightbox = document.getElementById('lightbox');
+const lbContent = document.getElementById('lb-content');
+document.querySelectorAll('#gallery-grid .ph').forEach(ph=>{
+  ph.addEventListener('click', ()=>{
+    lbContent.textContent = `${ph.dataset.label} — add a real photo here to replace this placeholder.`;
+    lightbox.classList.add('open');
+  });
+});
+lightbox.addEventListener('click', e=>{ if(e.target === lightbox) lightbox.classList.remove('open'); });
+document.querySelector('.lb-close').addEventListener('click', ()=> lightbox.classList.remove('open'));
+window.addEventListener('keydown', e=>{ if(e.key === 'Escape') lightbox.classList.remove('open'); });
+
+/* ---- reveal page once fonts/layout settle ---- */
+requestAnimationFrame(()=> document.body.classList.add('ready'));
+</script>
+
+</body>
+</html>
